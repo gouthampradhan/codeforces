@@ -1,8 +1,6 @@
 package problems.codeforces;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.util.*;
 
 /**
@@ -114,57 +112,51 @@ public class AndryushaAndColoredBalloons {
         }
     }
 
-    private static Map<Integer, List<Integer>> graph = new HashMap<>();
+    private static List<Integer>[] graph;
     private static int order = 0, D;
     private static int[] color;
+    private static PrintWriter pw = new PrintWriter(new BufferedOutputStream(System.out));
+
     public static void main(String[] args) throws Exception{
         int N = MyScanner.readInt();
         color = new int[N + 1];
+        graph = new List[N + 1];
+        for(int i = 0; i < graph.length; i ++){
+            graph[i] = new ArrayList<>();
+        }
         while(N -- > 1){
             int u = MyScanner.readInt();
             int v = MyScanner.readInt();
-            List<Integer> children1 = graph.get(u);
-            List<Integer> children2 = graph.get(v);
-            if(children1 == null){
-                children1 = new ArrayList<>();
-                graph.put(u, children1);
-            }
+            List<Integer> children1 = graph[u];
+            List<Integer> children2 = graph[v];
             children1.add(v);
-
-            if(children2 == null){
-                children2 = new ArrayList<>();
-                graph.put(v, children2);
-            }
             children2.add(u);
-            order = Math.max(order, children1.size());
-            order = Math.max(order, children2.size());
+        }
+        for(List<Integer> list : graph){
+            order = Math.max(order, list.size());
         }
         D = order + 1;
-        //Arrays.fill(color, 0);
         color[1] = 1;
-        dfs(1, 1);
-        System.out.println(D);
+        dfs(1, 1, -1);
+        pw.println(D);
         for(int i = 1; i < color.length; i ++){
-            System.out.println(color[i]);
+            pw.println(color[i]);
         }
+        pw.flush();
+        pw.close();
+        MyScanner.close();
     }
 
-    private static void dfs(int u, int colorIndex){
-        List<Integer> children = graph.get(u);
-        BitSet colorSet = new BitSet();
-        colorSet.set(color[u]);
-        children.forEach(x -> colorSet.set(color[x]));
+    private static void dfs(int u, int colorIndex, int parentColor){
+        color[u] = colorIndex;
+        List<Integer> children = graph[u];
         for(int c : children){
             if(color[c] == 0){
-                for(;;){
-                    colorIndex = getNextColor(colorIndex);
-                    if(!colorSet.get(colorIndex)){
-                        color[c] = colorIndex;
-                        colorSet.set(colorIndex);
-                        break;
-                    }
+                colorIndex =  getNextColor(colorIndex);
+                if(colorIndex == parentColor){
+                    colorIndex =  getNextColor(colorIndex);
                 }
-                dfs(c, colorIndex);
+                dfs(c, colorIndex, color[u]);
             }
         }
     }
