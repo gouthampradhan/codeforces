@@ -17,10 +17,11 @@ public class TaskD {
             long Vx = in.nextLong();
             long Vy = in.nextLong();
             count.putIfAbsent((Vy - (a * Vx)), 0L);
-            cantMeet.putIfAbsent(Vy + " " + Vx, 0L);
-            result += (count.get((Vy - (a * Vx))) - cantMeet.get(Vy + " " + Vx));
+            String vStr = Vy + " " + Vx;
+            cantMeet.putIfAbsent(vStr, 0L);
+            result += (count.get((Vy - (a * Vx))) - cantMeet.get(vStr));
             count.put((Vy - (a * Vx)), count.get((Vy - (a * Vx))) + 1);
-            cantMeet.put(Vy + " " + Vx, cantMeet.get(Vy + " " + Vx) + 1);
+            cantMeet.put(vStr, cantMeet.get(vStr) + 1);
         }
         out.println(result * 2);
         out.flush();
